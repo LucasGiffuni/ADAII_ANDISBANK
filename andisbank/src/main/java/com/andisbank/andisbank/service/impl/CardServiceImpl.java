@@ -11,6 +11,7 @@ import com.andisbank.andisbank.model.Card;
 import com.andisbank.andisbank.model.HasCard;
 import com.andisbank.andisbank.model.Transfer;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -19,45 +20,76 @@ public class CardServiceImpl implements ICardService {
 
     List<Card> cards = new ArrayList<Card>();
     List<Transfer> transfer = new ArrayList<Transfer>();
-    transfer.append({
+    public List<HasCard> cardUser = new ArrayList<HasCard>();
+
+    
+    //@Override
+    //public void getCustomerCard(int customer_id) {
+        // TODO Auto-generated method stub
+      //  transfer.add(new Transfer(1, new Date("2022-07-07"), 1, 2, 500, ""));
+      //  throw new UnsupportedOperationException("Unimplemented method 'getCustomerCard'");
+    //}
+    
+    @Override
+    public List<String> getCustomerCard(int customer_id) {
+        List<String> customerCards = new ArrayList<String>();
+        for (HasCard card : cardUser) {
+            if (card.getIdPerson() == customer_id) {
+                customerCards.add(card.getIdCard());
+            }
+        }
+        return customerCards; 
         
-    })
+    }
 
     @Override
-    public void getCustomerCard(int customer_id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCustomerCard'");
+    public List<HasCard> getAllCards() {
+        return cardUser;        
+    }
+
+    private String randomNumber(){
+        int numeroAleatoric = 1000000 + (int)(Math.random() * 9000000);
+        return Integer.toString(numeroAleatoric);
     }
     
     @Override
     public CreateDebitCardResponse createDebitCard(String customer_id) {
-        Card newCard = new Card("4213000100015002", 1, 20000);
-        cards.add(newCard)
-        HasCard hasCard = new HasCard("4213000100015002", Integer.parseInt(customer_id));
+        String cardId = randomNumber();
+        Card newCard = new Card(cardId, 1, 20000);
+        cards.add(newCard);        
+        HasCard hasCard = new HasCard(cardId, Integer.parseInt(customer_id));
+        cardUser.add(hasCard);
+        System.out.println(cardUser);
         CreateDebitCardResponse response = new CreateDebitCardResponse();
         CommonResponse comResponse = new CommonResponse(200, "OK");
         response.setCommonResponse(comResponse);
+        response.setCard(newCard);
         return response;
     }
     
     @Override
-    public IncreaseLimitCardResponse increaseCard(int customer_id, int newLimit) {
-        IncreaseLimitCardResponse response = new IncreaseLimitCardResponse();
-        Card newCard = new Card("4213000100015002", 1, 20000);
-        newCard.max_credit = newLimit;
+    public IncreaseLimitCardResponse increaseCard(int customer_id, String cardId, int newLimit) {
+        IncreaseLimitCardResponse response = new IncreaseLimitCardResponse();        
+        for(Card c : cards){
+            if(c.getId() == cardId){
+                c.max_credit = newLimit;
+                response.setCard(c);
+            }
+        }        
         CommonResponse comResponse = new CommonResponse(200, "OK");
+        response.setCommonResponse(comResponse);        
         return response;
     }
 
-    public CreateDebitCardResponse cancelActiveCard(int idUser, int idCard){
-        CreateDebitCardResponse response = new CreateDebitCardResponse();
-        Card newCard = new Card("4213000100015002", 1, 123);
-        HasCard hasCard = new HasCard("4213000100015002", idUser);
+    @Override
+    public HasCard cancelActiveCard(int idUser, String idCard){        
+        HasCard cardUserTemp = new HasCard(idCard, idUser);        
+        cardUser.remove(cardUserTemp);        
         
-        response.setCommonResponse(new CommonResponse(200, "OK"));
-        
-        return response;
+        return cardUserTemp;
     }
+
+    
 
     
     
