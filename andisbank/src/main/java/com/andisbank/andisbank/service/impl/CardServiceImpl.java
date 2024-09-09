@@ -21,14 +21,7 @@ public class CardServiceImpl implements ICardService {
     List<Card> cards = new ArrayList<Card>();
     List<Transfer> transfer = new ArrayList<Transfer>();
     public List<HasCard> cardUser = new ArrayList<HasCard>();
-
-    
-    //@Override
-    //public void getCustomerCard(int customer_id) {
-        // TODO Auto-generated method stub
-      //  transfer.add(new Transfer(1, new Date("2022-07-07"), 1, 2, 500, ""));
-      //  throw new UnsupportedOperationException("Unimplemented method 'getCustomerCard'");
-    //}
+   
     
     @Override
     public List<String> getCustomerCard(int customer_id) {
@@ -71,7 +64,7 @@ public class CardServiceImpl implements ICardService {
     public IncreaseLimitCardResponse increaseCard(int customer_id, String cardId, int newLimit) {
         IncreaseLimitCardResponse response = new IncreaseLimitCardResponse();        
         for(Card c : cards){
-            if(c.getId() == cardId){
+            if(c.getId().equals(cardId)){
                 c.max_credit = newLimit;
                 response.setCard(c);
             }
@@ -84,14 +77,9 @@ public class CardServiceImpl implements ICardService {
     @Override
     public HasCard cancelActiveCard(int idUser, String idCard){        
         HasCard cardUserTemp = new HasCard(idCard, idUser);        
-        cardUser.remove(cardUserTemp);        
-        
+        cardUser.remove(cardUserTemp);                
         return cardUserTemp;
     }
-
-    
-
-    
     
    
 }
